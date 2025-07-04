@@ -26,3 +26,4 @@ A partir do relatório gerado, estratégias de mitigação serão expostas para 
 - Monitoramento contínuo do servidor de e-mail.
 
 Além disso, o relatório pode ser adotado como um procedimento a ser usado nas análises de phishing que a empresa possa, por ventura, receber futuramente.
+
