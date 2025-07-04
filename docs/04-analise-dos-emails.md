@@ -60,4 +60,3 @@ Na Figura 7, observa-se que, ao clicar no botão Log in, as credenciais são env
     <p>Figura 7: Resquest POST.</p>
   </div>
 </div>
-
