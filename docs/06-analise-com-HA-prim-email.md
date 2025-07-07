@@ -24,7 +24,7 @@ Foram examinadas as seguintes sessões da página carregada após o envio do lin
 
 ## 6.1. Analysis Overview
 
-A primeira análise foi feita em março. Até o dia 29 de abril a análise retornava a flag **no specific threat**, como podemos obervar na figura abaixo:
+A primeira análise foi feita em março. Até 29 de abril a análise retornava a flag **no specific threat**, como podemos obervar na figura abaixo:
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
@@ -33,7 +33,7 @@ A primeira análise foi feita em março. Até o dia 29 de abril a análise retor
   </div>
 </div>
 
-No dia 26 de maio foi realizada uma nova análise e a flag mudou para **malicious**. A depender do ambiente da sandbox, a flag muda para *ambiguous*. Neste último caso o antivírus detecta o link como malicioso, mas a sandbox não encontra nenhum comportamento estranho.
+Em 26 de maio foi realizada uma nova análise e a flag mudou para **malicious**. A depender do ambiente da sandbox, a flag muda para *ambiguous*. Neste último caso o antivírus detecta o link como malicioso, mas a sandbox não encontra nenhum comportamento estranho.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
