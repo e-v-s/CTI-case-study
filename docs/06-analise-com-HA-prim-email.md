@@ -113,3 +113,9 @@ O Win10 gerou um alerta interessante associado ao Att&ck ID T1114, que se relaci
     <img src="../images/figura19.png" width="600">
   </div>
 </div>
+
+Agora seguimos com o Win11, que demonstrou ter um comportamento mais avançado em se tratando de um ataque. Quais seriam os indicadores deste comportamento? 
+
+O Att&ck ID T1041 está relacionado à “Exfiltração de dados através de canais C2”. Vale ressaltar que C2 é um acrônimo para Command and Control, e está associado às ferramentas e técnicas que atacantes usam para manter a comunicação com a infraestrutura alvo. 
+
+Ao clicar no link usando o Win11, a rede do alvo faz um request do tipo POST, usando JSON, para um servidor web: ``host: bzib.nelreports.net``. O que isso significa? Como mostrado no início desse relatório, a página era uma cópia exata da página de login do webmail da empresa. Se o usuário colocasse suas credenciais, provavelmente elas iriam para o servidor do atacante. 
