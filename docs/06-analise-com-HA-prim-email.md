@@ -1,100 +1,98 @@
-# 6	Análise do Link Usando Hybdrid Analysis – Primeira Tentativa de Phishing
+# 6 Analysis of the Link Using Hybrid-Analysis – First Phishing Attempt
 
-Como já explicado no tópico *“4. Análise do Design”*, os botões redirecionavam para um link, no caso:
+As already explained in “4 Email Analysis,” the buttons redirected to a link, in this case:  
 ``ipfs[.]io/ipfs/bafybeibdiuiykafjy2s7w56jqreby4xbp4mzmpupbchz5spu6tsbiterau``.
 
-Neste tópico foi usada a ferramenta Hybrid-Analysis, criada pela Payload Security e que agora faz parte do CrowdStrike. Serve para análise de arquivos e URLs e usa ambientes do tipo sandbox com o objetivo de detectar comportamentos maliciosos sem comprometer a infraestrutura local.
+In this section we used the Hybrid-Analysis tool, developed by Payload Security and now part of CrowdStrike. It analyzes files and URLs in a sandboxed VM to detect malicious behaviors without risking your local environment.
 
-O usuário faz o upload de um arquivo ou link, a ferramenta o executa em uma VM controlada e registra os resultados da interação com o arquivo/link, como:
+When you upload a file or link, the tool runs it in a controlled VM and logs interactions, such as:
 
-  - Análise comportamental (mudanças no registry, conexões de rede, processos, criações de arquivos);
-  - Indicadores de Comprometimento (IoCs);
-  - Comportamento de rede (resquests DNS, tráfego HTTP/HTTPS, IPs contactados);
-  - Mapeamento das Táticas, Técnicas e Procedimentos (TTPs) usando o Mitre ATT&CK;
-  - Resultados de escaneamento de antivírus usando o virustotal.
+- Behavioral analysis (registry changes, network connections, processes, file creation)  
+- Indicators of Compromise (IoCs)  
+- Network behavior (DNS lookups, HTTP/HTTPS traffic, contacted IPs)  
+- Mapping of Tactics, Techniques & Procedures (TTPs) using MITRE ATT&CK  
+- Antivirus scan results via VirusTotal  
 
-Foram examinadas as seguintes sessões da página carregada após o envio do link:
+We examined these report sections after submitting the link:
 
-  - Analysis Overview
-  - Anti-virus (AV) Scanner Results
-  - Falcon Sandbox Reports
-  - Relations
-  - Incident Response
-  - Additional Context
+- Analysis Overview  
+- Anti-virus (AV) Scanner Results  
+- Falcon Sandbox Reports  
+- Relations  
+- Incident Response  
+- Additional Context  
 
-## 6.1. Analysis Overview
+## 6.1 Analysis Overview
 
-A primeira análise foi feita em março. Até 29 de abril a análise retornava a flag **no specific threat**, como podemos obervar na figura abaixo:
+The first analysis ran in March. Until April 29, it returned **no specific threat**, as shown below:
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura13.png" width="600">
-    <p>Figura 13: Link do primeiro email.</p>
+    <p>Figure 13: Link from the first email.</p>
   </div>
 </div>
 
-Em 26 de maio foi realizada uma nova análise e a flag mudou para **malicious**. A depender do ambiente da sandbox, a flag muda para *ambiguous*. Neste último caso o antivírus detecta o link como malicioso, mas a sandbox não encontra nenhum comportamento estranho.
+On May 26 a new analysis flagged it as **malicious**. Depending on the sandbox environment, it can also show *ambiguous*, meaning the AV flags it malicious but the sandbox sees no unusual behavior.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura14.png" width="600">
-    <p>Figura 14: Link do primeiro email.</p>
+    <p>Figure 14: Link from the first email.</p>
   </div>
 </div>
 
 ## 6.2 AV Scanner Results
 
-A ferramenta faz o escaneamento da URL usando cinco ferramentas, são elas urlscan.io, ScamAdviser, CleanDNS, BforeAI e Criminal IP.
+Hybrid-Analysis scans the URL with five services: urlscan.io, ScamAdviser, CleanDNS, BforeAI, and Criminal IP.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura15.png" width="600">
-    <p>Figura 15: Link do primeiro email.</p>
+    <p>Figure 15: Link from the first email.</p>
   </div>
 </div>
 
 ### 6.2.1 Urlscan.io
 
-Esta ferramenta registra a atividade de rede do IP, o conteúdo da página, os metadados e também faz uma análise comportamental com o objetivo de detectar phishing. Neste caso, Hybrid-Analysis retorna a flag **No Classification**, mas se clicarmos em *More Details* teremos duas informações: o Google Safe Browsing sinalizou o domínio como malicioso e a página tem status HTTP 410:
+This tool logs network activity, page content, metadata, and behavioral cues to detect phishing. Here, Hybrid-Analysis shows **No Classification**, but under *More Details* you’ll see Google Safe Browsing marked it malicious and the page returned HTTP 410:
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura16.png" width="600">
-    <p>Figura 16: Link do primeiro email.</p>
+    <p>Figure 16: Link from the first email.</p>
   </div>
 </div>
 
 ### 6.2.2 ScamAdviser
 
-Esta ferramenta é baseada em votos da comunidade. Os reports de que é um scam são recentes, por isso a flag ``Unsure (10%)``.
+Community votes power this tool. Since reports are recent, it shows **Unsure (10%)**.
 
 ### 6.2.3 CleanDNS
 
-Os suários do CleanDNS reportaram que o domínio está sendo abusado.
+CleanDNS users reported the domain as abused.
 
 ### 6.2.4 Criminal IP
 
-O scan do Ciminal IP sugere que existe uma probabilidade de 99,97% do link estar relacionado a ataques de phishing.
+Criminal IP gives a 99.97% probability the link is tied to phishing.
 
 ## 6.3 Falcon Sandbox Reports
 
-Por default, Hybrid-Analysis usa três sandboxes:
+By default, Hybrid-Analysis runs three sandboxes:
 
-  - Windows 7 32bit (Win7)
-  - Windows 10 64bit (Win10)
-  - Windows 11 64bit (Win11)
+- Windows 7 32-bit (Win7)  
+- Windows 10 64-bit (Win10)  
+- Windows 11 64-bit (Win11)  
 
-Farei uma análise crítica comparativa dos indicadores encontrados nos três Sistemas Operacionais (OS), a partir disso será discutida a análise relacionada ao OS mais provável como alvo do ataque.
+I’ll compare the indicators across these OSes to infer which was the likely target.
 
-### 6.3.1 Indicadores Suspeitos
+### 6.3.1 Suspicious Indicators
 
-Na primeira parte do relatório gerado pelo Hybrid-Analysis, temos a sessão **Indicators**. Nesta sessão encontramos os indicadores que apontam para uma possível tática, técnica e procedimento (TTP) usados. Estes resultados vêm da execução da URL dentro do ambiente da sandbox, então podemos acompanhar o que ocorre ao clicar no link.
+In the **Indicators** section, we see alerts tied to potential TTPs. All three OSes triggered **Suricata** alerts (Suricata is an open-source IDS/IPS). Here, it flagged P2P file-sharing traffic, i.e., IPFS activity.
 
-Na tabela seguinte, é possível ver que **os três OS tiveram alertas do Suricata**. O Suricata é uma ferramenta de análise de rede e detecção de ameaças open source, é um software de IDS/IPS. Neste caso o alerta tem relação com compartilhamento de arquivos via P2P, ou seja, existe um tráfego IPFS.
+Win7 had no other alerts, so we move on to Win10.
 
-Para além dos alertas do Suricata, o Win7 não gera nenhum outro alerta inicial, então continuaremos com o próximo sistema, o Win10.
-
-O Win10 gerou um alerta interessante associado ao Att&ck ID T1114, que se relaciona à tática de “Coleta” e mais especificamente à “Coleta de Email”. Na matriz Mitre ATT&CK, esta tática está relacionada à coleta de informações sensíveis usando o e-mail de um alvo qualquer. 
+Win10 produced an alert for ATT&CK ID T1114 (Email Collection), which involves harvesting sensitive info via email.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
@@ -114,8 +112,13 @@ O Win10 gerou um alerta interessante associado ao Att&ck ID T1114, que se relaci
   </div>
 </div>
 
-Agora seguimos com o Win11, que demonstrou ter um comportamento mais avançado em se tratando de um ataque. Quais seriam os indicadores deste comportamento? 
+Next, Win11 showed more advanced behavior. It flagged ATT&CK ID T1041 (Exfiltration Over C2 Channel). C2 stands for Command and Control—techniques attackers use to maintain contact with compromised infrastructure.
 
-O Att&ck ID T1041 está relacionado à “Exfiltração de dados através de canais C2”. Vale ressaltar que C2 é um acrônimo para Command and Control, e está associado às ferramentas e técnicas que atacantes usam para manter a comunicação com a infraestrutura alvo. 
+On Win11, clicking the link triggers a POST request with JSON to `host: bzib.nelreports.net`. Recall the phishing page was a replica of the company’s webmail login—any credentials entered would go straight to the attacker’s server. 
 
-Ao clicar no link usando o Win11, a rede do alvo faz um request do tipo POST, usando JSON, para um servidor web: ``host: bzib.nelreports.net``. O que isso significa? Como mostrado no início desse relatório, a página era uma cópia exata da página de login do webmail da empresa. Se o usuário colocasse suas credenciais, provavelmente elas iriam para o servidor do atacante. 
+**Previous:** [5 Source code analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/05-analise-source-code-prim-email.md)
+
+**You're here:** [6 Sandbox analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/06-analise-com-HA-prim-email.md)
+
+**Next:** [7 New attack - Second email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/07-novo-ataque-seg-email.md)
+
