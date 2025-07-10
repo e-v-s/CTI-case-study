@@ -6,16 +6,18 @@ This report shows a hands-on Cyber Threat Intelligence (CTI) analysis of a phish
 
 By dissecting both the email’s design (its pretext, delivery methods and spoofing tricks) and the dynamic behavior of cloned pages and malicious back-ends, this document highlights the dangers of skipping origin-authentication controls (SPF, DKIM, DMARC). It then lays out a repeatable mitigation procedure. In short, this analysis is your playbook for bolstering defenses against future phishing campaigns.
 
-[1 Context](https://github.com/e-v-s/CTI-case-study/blob/main/docs/02-contexto.md)
+*The .pdf of this work is provided in portuguese from Brasil*
 
-[2 Objectives](https://github.com/e-v-s/CTI-case-study/blob/main/docs/03-objetivos.md)
+[Context](https://github.com/e-v-s/CTI-case-study/blob/main/docs/02-contexto.md)
 
-[3 Email analysis](https://github.com/e-v-s/CTI-case-study/blob/main/docs/04-analise-dos-emails.md)
+[Objectives](https://github.com/e-v-s/CTI-case-study/blob/main/docs/03-objetivos.md)
 
-[4 Source code analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/05-analise-source-code-prim-email.md)
+[Email analysis](https://github.com/e-v-s/CTI-case-study/blob/main/docs/04-analise-dos-emails.md)
 
-[5 Sandbox analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/06-analise-com-HA-prim-email.md)
+[Source code analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/05-analise-source-code-prim-email.md)
 
-[6 New attack - Second email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/07-novo-ataque-seg-email.md)
+[Sandbox analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/06-analise-com-HA-prim-email.md)
 
-[7 Vulnerability tracking and conclusion](https://github.com/e-v-s/CTI-case-study/blob/main/docs/8-rastreamento-de-vuln.md)
+[New attack - Second email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/07-novo-ataque-seg-email.md)
+
+[Vulnerability tracking and conclusion](https://github.com/e-v-s/CTI-case-study/blob/main/docs/8-rastreamento-de-vuln.md)
