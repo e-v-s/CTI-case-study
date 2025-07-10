@@ -6,7 +6,7 @@ This report shows a hands-on Cyber Threat Intelligence (CTI) analysis of a phish
 
 By dissecting both the email’s design (its pretext, delivery methods and spoofing tricks) and the dynamic behavior of cloned pages and malicious back-ends, this document highlights the dangers of skipping origin-authentication controls (SPF, DKIM, DMARC). It then lays out a repeatable mitigation procedure. In short, this analysis is your playbook for bolstering defenses against future phishing campaigns.
 
-*The .pdf of this work is provided in portuguese from Brasil*
+*The .pdf of this work is provided in portuguese from Brasil*: https://github.com/e-v-s/CTI-case-study/blob/main/evora_leite_CTI.pdf
 
 [Context](https://github.com/e-v-s/CTI-case-study/blob/main/docs/02-contexto.md)
 
