@@ -1,17 +1,16 @@
-# 5. Análise do *Source Code* - Primeira Tentativa de Phishing 
+# 5 Source Code Analysis – First Phishing Attempt
 
-Aqui será analisado o *source code* da primeira tentativa de phishing, onde será feita uma análise mais aprofundada das partes relevantes do header.
+Here we’ll analyze the source code of the first phishing attempt, diving deeper into the relevant header sections.
 
-## 5.1 Cadeia de Recebimento - *Received Chain*
+## 5.1 Received Chain
 
-A cadeia de recebimento (*received chain*) é formada pelos servidores que manipularam o e-mail, incluindo o servidor do destinatário. Podemos fazer um rastreamento percorrendo o source code do e-mail na direção *top -> bottom*. 
+The received chain is formed by the servers that handled the email, including the recipient’s server. We trace it by reading the source code from top → bottom.
 
-No *top* está a conexão mais recente (geralmente o servidor do destinatário), enquanto que no *bottom* está a conexão mais antiga, ou seja, a do servidor que originou a comunicação.
+At the top is the most recent hop (usually the recipient’s server), while at the bottom is the oldest hop, i.e., the originating server.
 
-A importância destes elementos reside no fato de que todos os endereços de IP dos servidores estão no *source code*, o que nos permite analisar o caminho feito pelo e-mail. Porém, isso nos dará apenas uma ideia do que
-pode ter ocorrido, já que os IPs não são uma fonte confiável de *intel*.
+These elements are important because every server’s IP address is visible in the source, letting us reconstruct the email’s path—but IPs alone aren’t a fully reliable intel source.
 
-No **primeiro bloco** do email temos o último ponto de contato (servidor mais recente): ``cpanel-003-fra.hostingww.com``, usando o protocolo LMTP. Este contato é o servidor do provedor de email do cliente.
+In the **first block** we see the last contact point (most recent server): `cpanel-003-fra.hostingww.com` using LMTP. That’s the client’s email provider.
 
 ```
   X-Mozilla-Status: 0001
@@ -28,13 +27,13 @@ No **primeiro bloco** do email temos o último ponto de contato (servidor mais r
   Delivery-date: Fri, 25 Apr 2025 14:03:59 +0000
 ```
 
-No **segundo bloco** temos outro servidor, de IP ``148.113.172.133`` e URL ``vps-58680c2d.vps.ovh.ca``. Neste bloco o servidor de envio ``vps-58680c2d.vps.ovh.ca`` se anuncia ao servidor de recebimento usando o
-``helo=mail.corridorconstructioniowa.cam``, e o servidor do cliente aceita receber o email. O ``helo`` funcionaria como um "handshake" e é uma parte essencial no protocolo SMTP, já que ele verifica a saúde dos servidores.
+
+In the **second block** we have another server, IP `148.113.172.133` at `vps-58680c2d.vps.ovh.ca`. Here the sending server announces itself with `helo=mail.corridorconstructioniowa.cam`, and the client’s server accepts the message. The `helo` acts as an SMTP handshake—vital for verifying server legitimacy.
 
 ___
 <div style="font-family: 'Courier New';">
-  <mark style="background-color: rgb(211, 228, 59);">Received: from vps-58680c2d.vps.ovh.ca ([148.113.172.133]:46792 helo=mail.corridorconstructioniowa.cam)</mark><br>
-    by cpanel-003-fra.hostingww.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384<br>
+  <mark>Received: from vps-58680c2d.vps.ovh.ca ([148.113.172.133]:46792 helo=mail.corridorconstructioniowa.cam)</mark><br>
+    by cpanel-003-fra.hostingww.com with esmtps (TLS1.3) tls TLS_AES_256_GCM_SHA384<br>
     (Exim 4.98)<br>
     (envelope-from <hr@corridorconstructioniowa.cam>)<br>
     id 1u8Jep-0000000FOHA-1KmS<br>
@@ -47,8 +46,7 @@ ___
 </div>
 ___
 
-
-Neste caso, a ferramenta **Virus Total** não sinalizou o domínio nem o IP, porém a ferramenta retorna um achado importante relacionado ao IP ``148.113.172.133``:
+VirusTotal didn’t flag the domain or IP, but it did return a noteworthy certificate detail for `148.113.172.133`:
 
 ___
 
@@ -73,96 +71,78 @@ ___
 
 ____
 
-Aqui temos três pontos interessantes:
 
-  1. O CN está associado a um site duvidoso;
-  2. As autoridades certificadoras não são confiáveis;
-  3. O certificado está vencido. 
+Key takeaways:
 
-Além disso, o email passou por outro país antes de chegar no servidor final, o WHOIS indica que o hosting está sendo feito no Canadá.
+1. The CN points to a dubious site.  
+2. The issuing CAs aren’t top-tier.  
+3. The cert is expired.
 
-Outro achado é que o subdomínio que aparece no CN não retorna nenhuma flag maliciosa na inspeção com o *Virus Total*, porém se fizermos uma busca pelo domínio, teremos algumas flags associadas aos IPs reconhecidos pelo pDNS (passive DNS, que é uma gravação histórica das resoluções DNS do domínio).
+The email also routed through Canada before final delivery, per WHOIS details for the hosting.
+
+A passive DNS lookup shows several IPs tied to that CN, some carrying malicious flags:
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura8.png" width="600">
-    <p>Figura 8: IPs reconhecidos pelo pDNS.</p>
+    <p>Figure 8: IPs recorded by passive DNS.</p>
   </div>
 </div>
 
-No **terceiro bloco**, e último contendo a tag ``Received``, temos o primeiro servidor, o servidor que provavelmente gerou o email. O virustotal não tem nenhuma informação sobre a URL ``ip-134-38.dataclub.info``, porém temos informações sobre o IP ``84.38.134.38``. O servidor está na Latvia, porém nenhum vendor sinalizou o IP nem como malicioso nem como não malicioso, o que é estranho. 
+In the **third block**—the earliest hop—we see the likely origin server. VirusTotal has no info on `ip-134-38.dataclub.info`, but it shows details for IP `84.38.134.38`, hosted in Latvia. Oddly, no vendor flagged it either way.
 
 <div style="font-family: 'Courier New';">
-  <mark style="background-color: rgb(211, 228, 59);">Received: from ip-134-38.dataclub.info (unknown [84.38.134.38])
-  by mail.corridorconstructioniowa.cam (Postfix) with ESMTPSA id 154A88D745</mark>
-  for <ceo@msolutions.com>; Fri, 25 Apr 2025 14:02:02 +0000 (UTC)
+  <mark>Received: from ip-134-38.dataclub.info (unknown [84.38.134.38])  
+  by mail.corridorconstructioniowa.cam (Postfix) with ESMTPSA id 154A88D745</mark><br>
+  for &lt;ceo@msolutions.com&gt;; Fri, 25 Apr 2025 14:02:02 +0000 (UTC)
 </div>
 
-Também temos estas informações na aba ``DETAILS`` do **Virus Total**, associadas ao IP:
+The IP details list a Latvian company and address—but attackers could be masking via VPN/Tor.
 
-```
-  role: DATCLUB SIA 
-  address: Kraslavas iela 14 - 2 
-  address: LV1003 
-  address: Riga, Latvia 
-  phone: +371 60-00-77-98 
-```
-
-Uma breve pesquisa OSINT usando google maps nos retorna o seguinte: 
-
-<div style="display: flex;">
-  <div style="justify-items: center; margin: 50px;">
-    <img src="../images/figura9.png" width="600">
-    <p>Figura 9: IPs reconhecidos pelo pDNS.</p>
-  </div>
-</div>
-
-Lembrando que não é possível dar certeza do endereço do servidor, pois o atacante poderia estar usando uma VPN, Tor, etc.
-
-Ainda sobre o IP ``84.38.134.38``, temos uma informação importante: foram detectados mais de 10 arquivos incorporando este IP. Na aba ``RELATIONS`` do site virustotal temos 23 arquivos que fazem referência ao IP, sempre relacionados a arquivos de email, como mostra a imagem abaixo.
+Over 23 files on VirusTotal reference that IP, all tied to email-like Trojans—but the flags are generic, so we can’t pin down a specific malware.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura10.png" width="600">
-    <p>Figura 10: Arquivos que incorporam o IP 84.38.134.38.</p>
+    <p>Figure 10: Files embedding IP 84.38.134.38.</p>
   </div>
 </div>
 
-Todos os arquivos estão relacionados à detecção de trojan. Infelizmente não podemos ter certeza de qual trojan estaria sendo usado, pois as flags abaixo são generalistas, são flags levantadas quando um arquivo possui um comportamento parecido a um trojan. Também não podemos inferir que algum malware está associado ao link do e-mail.
+All detections point to trojan-style behavior; no definitive link to the phishing URL itself.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura11.png" width="600">
-    <p>Figura 11: Detecções de trojan.</p>
+    <p>Figure 11: Trojan detections.</p>
   </div>
 </div>
 
-## 5.2 Caminho de Retorno - *Return-path*
+## 5.2 Return-Path
 
-O caminho de retorno (*Return-path*) é o endereço usado para enviar o email. Podemos vê-lo no **primeiro bloco** do source code, em verde. 
+The return path is the envelope-from address. We see it highlighted in the **first block**:
 
 ___
 <div style="font-family: 'Courier New';">
   X-Mozilla-Status: 0001<br>
   X-Mozilla-Status2: 00000000<br>
-  <mark style="background-color: rgb(97, 203, 116);">Return-Path: < hr@corridorconstructioniowa.cam></mark><br>
+  <mark>Return-Path: &lt;hr@corridorconstructioniowa.cam&gt;</mark><br>
   Delivered-To: ceo@msolutions.com<br>
   Received: from cpanel-003-fra.hostingww.com<br>
     by cpanel-003-fra.hostingww.com with LMTP<br>
     id EGKZEk+WC2jNvzYA2p0M4Q<br>
-    <mark style="background-color: rgb(97, 203, 116);">(envelope-from < hr@corridorconstructioniowa.cam>)</mark><br>
-    for < ceo@msolutions.com>; Fri, 25 Apr 2025 14:03:59 +0000 <br>
-  Return-path: < hr@corridorconstructioniowa.cam><br>
-  Envelope-to: ceo@msolutions.com<Br>
+    <mark>(envelope-from &lt;hr@corridorconstructioniowa.cam&gt;)</mark><br>
+    for &lt;ceo@msolutions.com&gt;; Fri, 25 Apr 2025 14:03:59 +0000<br>
+  Return-path: &lt;hr@corridorconstructioniowa.cam&gt;<br>
+  Envelope-to: ceo@msolutions.com<br>
   Delivery-date: Fri, 25 Apr 2025 14:03:59 +0000<br>
-<div>
+</div>
 ___
 
-O e-mail ``hr@corridorconstructioniowa.cam`` pode até existir, mas o site ``corridorconstructioniowa.cam`` não. O interessante é que a empresa existe e é legítima, mas parece que sofreu um TLD-squatting e estão usando o domínio de forma maliciosa.
+The address `hr@corridorconstructioniowa.cam` might exist, but the domain doesn’t. Corridor Construction Iowa is a real company, likely a victim of TLD-squatting.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura12.png" width="600">
-    <p>Figura 12: Empresa legítima.</p>
+    <p>Figure 12: Legitimate company website.</p>
   </div>
 </div>
