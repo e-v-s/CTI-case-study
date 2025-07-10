@@ -1,51 +1,57 @@
-# 7.	Nova Série de Ataques, junho | 2025 – Segunda Tentativa de Phishing
+# 7. New Series of Attacks, June | 2025 – Second Phishing Attempt
 
-No início de junho, a empresa recebeu o mesmo tipo de ataque. Em um único dia receberam 7 emails de phishing com o mesmo pretexto. Um detalhe muito importante, o atacante usou o mesmo domínio do e-mail corporativo do alvo, um indicativo de spoofing de e-mail do seu próprio domínio. Mas, diferente do ataque passado que usou um e-mail com TLD squatting de outra empresa, neste caso não houve indícios de typosquatting nem nenhuma outra técnica, era realmente um spoofed e-mail se passando por um e-mail de suporte.
+At the start of June, the company faced the same type of attack. In a single day, they received 7 phishing emails with the same pretext. A key detail: the attacker used the target’s own corporate email domain, a clear sign of email spoofing from their own domain. Unlike the previous attack—which used a TLD-squatting email from another company—this one showed no signs of typosquatting or other tricks; it was genuinely a spoofed support email.
 
-A análise com a sandbox do Hybrid-Analysis não retornou nada, provavelmente por ser uma campanha de phishing recente. Os atacantes tem a tendência de criar novos domínios com tempo de vida curto para não serem rastreados, não dando tempo das ferramentas de análise sinalizarem o link como malicioso.
+The Hybrid-Analysis sandbox returned nothing, probably because this is a very recent phishing campaign. Attackers often spin up new domains with short lifespans so analysis tools can’t flag them in time.
 
-Até o dia 03 de junho o link funcionava, agora, além da página não existir mais, já está sendo sinalizada pelo Google Safe Browsing como um site malicioso.
+Until June 3rd, the link worked; now, not only is the page gone, but Google Safe Browsing already marks it as malicious.
 
-O link do botão *Verify your account here* desta vez não é um link de compartilhamento via IFPS, mas sim um provedor de domínio legítimo, o Weebly. Este provedor possui um [histórico](https://blog.eclecticiq.com/financially-motivated-threat-actor-leveraged-google-docs-and-weebly-services-to-target-telecom-and-financial-sectors) de ser host para sites de phishing, assim como [vários outros](https://unit42.paloaltonetworks.com/platform-abuse-phishing/). 
+| Button link |
+| - |
+| hxxp[://]webmailsecureonlinelogin83kksdmsmsm[.]weebly[.]com/ |
 
- | Link do botão |
- | - |
- | hxxp[://]webmailsecureonlinelogin83kksdmsmsm[.]weebly[.]com/ |
+The “Verify your account here” button points not to IPFS but to a legitimate domain provider, Weebly. This provider has a documented history of hosting phishing sites, as noted [here](https://blog.eclecticiq.com/financially-motivated-threat-actor-leveraged-google-docs-and-weebly-services-to-target-telecom-and-financial-sectors) and [here](https://unit42.paloaltonetworks.com/platform-abuse-phishing/).
 
-A análise do link no virustotal retornou que duas plataformas sinalizaram como url maliciosa. Porém, não tinha nenhuma informação importante, já que os DETAILS estavam associados ao provedor usado, e não ao atacante.
+The VirusTotal link analysis showed two platforms flagged it as malicious, but the DETAILS only reflected the provider’s domain, not the attacker’s.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura20.png" width="600">
-    <p>Figura 20: Análise do link no virustotal</p>
+    <p>Figure 20: Link analysis on VirusTotal</p>
   </div>
 </div>
 
-## Análise com BurpSuite
+## Analysis with BurpSuite
 
-Como nada foi encontrado nas ferramentas **virustotal** e **Hybrid-Analysis**, resolvi fazer a análise dos *requests* feitos via HTTP usando o **BurpSuite**.
+Since VirusTotal and Hybrid-Analysis turned up nothing, I inspected the HTTP requests via BurpSuite.
 
-Assim que a página do link malicioso é carregada, o request abaixo é feito. Na linha 09, é um request do tipo ``XMLHttpRequest`` é um tipo de ``AJAX/XHR call``, carregam geralmente payloads do tipo JSON via função Javascript, os quais são enviados no background da aplicação, sem que a página carregue. Foi feito uma conexão com a api do servidor do atacante.
+As soon as the malicious page loads, the request below fires. On line 09 there’s an `XMLHttpRequest` (an AJAX/XHR call) that typically fetches JSON payloads via JavaScript in the background—here connecting to the attacker’s API.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura21.png" width="600">
-    <p>Figura 21: Header HTTP</p>
+    <p>Figure 21: HTTP header</p>
   </div>
 </div>
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura22.png" width="600">
-    <p>Figura 22: Requests no BurpSuite</p>
+    <p>Figure 22: Requests in BurpSuite</p>
   </div>
 </div>
 
-Na página, foram colocadas as credenciais **usuário** e **senha** com o objetivo de detectar algo no backend da aplicação. Como mostrado na figura abaixo, foi feito um request ``POST`` para o servidor AJAX do site malicioso, contendo as credenciais em *plaintext*. **Aqui, fica óbvio que o objetivo do ataque era a coleta de credenciais.**
+On the page, credentials (username and password) were entered to see backend behavior. As shown below, a `POST` request is sent to the malicious site’s AJAX server with the credentials in plaintext. **It’s obvious the attack’s goal was credential harvesting.**
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura23.png" width="600">
-    <p>Figura 23: Credenciais</p>
+    <p>Figure 23: Credentials submission</p>
   </div>
 </div>
+
+**Previous:** [Sandbox analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/06-analise-com-HA-prim-email.md)
+
+**You're here:** [New attack - Second email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/07-novo-ataque-seg-email.md)
+
+**Next:** [Vulnerability tracking and conclusion](https://github.com/e-v-s/CTI-case-study/blob/main/docs/8-rastreamento-de-vuln.md)
