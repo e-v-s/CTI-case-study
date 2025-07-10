@@ -1,69 +1,72 @@
-# 8.	Rastreamento de Vulnerabilidades
+# 8 Vulnerability Tracking
 
-## 8.1. Email Spoofing
+## 8.1 Email Spoofing
 
-O e-mail spoofing ocorre quando um atacante envia um e-mail se passando por um e-mail ou domínio legítimo. Diferente da técnica de TLD squatting que vimos no primeiro caso de phishing, neste caso o atacante forja o ``From:`` ou outros campos do header do e-mail.
+Email spoofing happens when an attacker sends a message pretending to be from a legitimate email or domain. Unlike the TLD squatting we saw in the first phishing case, here the attacker forges the `From:` or other header fields.
 
-Para exemplificar o ocorrido, como usamos MSolutions como o codinome da empresa, vamos supor que o domínio da empresa seja msolutions.com. O atacante usou um email *no-reply@msolutions.com*, ou seja, cai na característica de ser um spoofed mail. Este email não foi reconhecido pelo servidor do alvo como spam. Existe aí uma falha do próprio domínio e webserver do alvo, pois se o domínio tivesse as proteções necessárias, o servidor do usuário iria reconhecer este spoofed mail como ilegítimo e o recebimento seria rejeitado, no mínimo. Mas, como isso não ocorreu, é prova suficiente para supor que o webmail nem o domínio do alvo estavam protegidos. ``Então, quais proteções são necessárias para evitar um spoofing de email corporativo?``
+To illustrate, assuming our company codename is MSolutions and the domain is `msolutions.com`, the attacker used `no-reply@msolutions.com`, a spoofed address. The target’s server didn’t flag it as spam. That’s a failure of the domain and web server configuration; with proper protections, this spoofed mail would have been blocked or quarantined. Since it wasn’t, we can conclude the target’s webmail and DNS lacked necessary safeguards. **So, what protections prevent corporate email spoofing?**
 
-Existem mecanismos de defesa a serem implementados para que o uso indevido de um domínio seja evitado, são eles: Sender Policy Framework - SPF, DomainKeys Identified Mail - DKIM e Domain-based Message Authentication, Reporting & Conformance - DMARC. Veremos em seguida com detalhes cada um.
+There are three defenses to implement: Sender Policy Framework (SPF), DomainKeys Identified Mail (DKIM), and Domain-based Message Authentication, Reporting & Conformance (DMARC). We’ll dive into each next.
 
-## 8.2. SPF
+## 8.2 SPF
 
-Este framework funciona como um mecanismo de autenticação. Ele permite que o proprietário do domínio publique, no DNS, uma especificação de quais endereços de IP ou hostnames podem enviar emails em nome do domínio. Por *default*, o protocolo de envio de email SMTP não verifica o remetente do email, então um atacante com acesso a qualquer servidor de email pode, simplesmente, usar o campo From: do header do email com qualquer email criado usando o domínio do alvo. Como isto é possível?
+SPF is an authentication mechanism letting a domain owner publish, via DNS TXT records, which IP addresses or hostnames can send email on that domain’s behalf. By default, SMTP doesn’t verify the `From:` address, so an attacker with any mail server can simply spoof the header.
 
-No nosso caso, o atacante colocou um endereço arbitrário no From, usando o domínio do próprio alvo *no-reply@msolutions.com*, lembrando que este endereço na verdade não existe. Esta **vulnerabilidade** na configuração do SPF do servidor web do alvo foi explorada pelo atacante. A “sorte” do alvo é que a empresa é pequena e o CEO, quem recebeu o email, sabe quais emails existem na empresa. 
+In our case, the attacker set `From: no-reply@msolutions.com`—an address that doesn’t exist. This vulnerability in the target’s SPF configuration was exploited. The small size of the company “helped,” since the CEO recognizes valid internal addresses.
 
-O SPF é colocado na configuração do DNS no registro TXT-Record do domínio principal, que seria, em nosso caso *msolutions.com*. Na plataforma do domínio o SPF estava configurado.
+SPF lives in the domain’s DNS TXT record (e.g. for `msolutions.com`). At the time, the SPF record was configured—but evidently not strict enough.
 
-## 8.3. DKIM
+## 8.3 DKIM
 
-O DKIM é um método de autenticação de email, onde o destinatário verifica que um servidor de email autorizado “assinou”, com uma chave criptográfica, a mensagem recebida. Também garante a integridade  da mensagem contra adulteração.
+DKIM authenticates email by having an authorized mail server “sign” outgoing messages with a private key, ensuring integrity and legitimacy.
 
-O servidor de email gera um par de chaves pública/privada. A chave pública deve ser publicada no servidor DNS, também no registro TXT-record, mas desta vez no sub-domínio correspondente: default._domainkey.msolutions.com. Com um DKIM registrado, o cliente quando envia um email do seu servidor de email autorizado, tem esse email assinado com a chave  privada. Quando este email chega ao servidor de destino, este extrai o domínio que está no header e busca via DNS a chave DKIM pública deste domínio, recalculando assim o hash gerado pela assinatura e verificando que a mensagem é legítima.
+The mail server generates a public/private key pair. The public key goes in DNS as a TXT record under a selector subdomain (e.g. `default._domainkey.msolutions.com`). With DKIM in place, outgoing mail is signed with the private key; recipients fetch the public key via DNS, recompute the hash, and verify the signature.
 
-<mark style="background-color: rgb(220, 72, 55);">Na plataforma DNS do domínio o DKIM não estava configurado.</mark> Isso torna o spoofing do domínio de email muito mais fácil para o atacante, e foi o que aconteceu. Além disso, o atacante pode usar spoofed emails para clientes, se passando pelo proprietário do domínio. Alguns servidores de email não entregam emails sem o DKIM configurado, então isso pode impedir também o envio de emails legítimos.
+<mark style="background-color: rgb(220, 72, 55);">At the DNS provider, DKIM was not configured.</mark> This made domain spoofing trivially easy. Some mail servers outright reject unsigned mail, so missing DKIM can also block legitimate messages.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura24.png" width="600">
-    <p>Figura 24: Implementação do DKIM</p>
+    <p>Figure 24: DKIM implementation</p>
   </div>
 </div>
 
-O DKIM foi implementado no domínio da empresa da seguinte maneira. O foi gerado uma chave DKIM no provedor de email e no domínio DNS, no registro, foi adicionado um domínio ``default._domainkey`` e nele adicionado um registro TXT com o valor da chave pública. Com a configuração correta, o provedor de email retorna que o domínio agora possui um DKIM válido.
+DKIM was added by generating a key in the email provider, then publishing the public key in DNS under `default._domainkey`. After correct setup, the provider reports a valid DKIM.
 
-## DMARC
+## 8.4 DMARC
 
-O DMARC é uma política publicada no DNS, avisando aos servidores de email dos destinatários como lidar com emails que falham na checagem do SPF e/ou do DKIM. É uma política que deve ser publicada no DNS do cliente. 
+DMARC is a DNS-published policy telling recipient servers how to handle emails failing SPF and/or DKIM checks. It must be added to the domain’s DNS.
 
-As políticas usadas no DMARC são **none**, para que quando algum email recebido falhe as checagens o servidor não faça nada; **quarantine**, neste caso o email vai para caixa de spam; e **reject**, para que o email seja recebido.
+DMARC policies include **none** (take no action), **quarantine** (send to spam), and **reject** (deny delivery).
 
-Para possuir uma política DMARC, o DNS precisa ter SPF e DKIM configurados. Como neste caso o alvo não possuía registro DKIM, <mark style="background-color: rgb(220, 72, 55);">o DMARC também não estava configurado</mark>.
+A DMARC record requires SPF and DKIM to be in place. Since DKIM was missing, <mark style="background-color: rgb(220, 72, 55);">DMARC was also absent</mark>.
 
-O uso do DMARC também possibilita adicionar emails para enviar resumos diários (parâmetro ``rua``) e relatórios forense (parâmetro ``ruf``) caso o DMARC encontre uma falha, como no exemplo:
+DMARC can also specify reporting emails:
 
 ```
   v=DMARC1; p=quarantine; rua=mailto:dmarc-aggregate@msolutions.com; ruf=mailto:dmarc-forensic@msolutions.com
 ```
 
-Também foi configurada a política DMARC no registro DNS do domínio, neste caso foi usado o padrão acima. A imagem ao lado ilustra que uma política simples também retorna como válido. Para que o DMARC seja registrado, é necessário que o domínio tenha primeiro o DKIM válido.
+A simple policy like the one above was added after DKIM was validated.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
     <img src="../images/figura25.png" width="600">
-    <p>Figura 25: Implementação do DMARC</p>
+    <p>Figure 25: DMARC implementation</p>
   </div>
 </div>
 
-# 9.  Conclusão
+# 9. Conclusion
 
-Todas as empresas, pequenas e grandes, estão sujeitas a um ataque de spoofing. Com o propósito de evitar o vazamento de credenciais via phishing, protegendo assim a privacidade dos usuários/clientes e também a integridade da empresa, devem ser implementados controles de autenticação de email (SPF, DKIM e DMARC) e monitoramento.
+All organizations, big or small, are vulnerable to spoofing attacks. To prevent credential leaks via phishing, and protect user privacy and corporate integrity, email authentication controls (SPF, DKIM, DMARC) and ongoing monitoring must be implemented.
 
-Estes controles reforçam a **confidencialidade**, **integridade** e **disponibilidade**, pilares da segurança da informação, na empresa. E, ao impedir o spoofing de emails e domínios, estes controles reduzem a probabilidade de vazamento de credenciais da empresa, impendindo que:
+These controls strengthen the **confidentiality**, **integrity**, and **availability** pillars of information security. By blocking domain and email spoofing, they reduce the risk of credential exposure, preventing:
 
-  - Os colaboradores tenham seus dados expostos por ataques de phishing (confidencialidade);
-  - Os sistemas fiquem indisponívels em caso de invasão ocasionada por credenciais vazadas (disponibilidade);
-  - Garante a integridade dos emails enviados pela empresa (integridade);
-  - E garante que atacantes não usem o domínio da empresa para ataques futuros, que podem inclusive comprometes os clientes da empresa.
+- Employees’ data from being phished (confidentiality);  
+- System outages caused by compromised credentials (availability);  
+- Tampering with legitimate corporate emails (integrity);  
+- Attackers from abusing the company domain in future campaigns, which could also target clients.  
 
+**Previous:** [New attack - Second email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/07-novo-ataque-seg-email.md)
+
+**You're here:** [Vulnerability tracking and conclusion](https://github.com/e-v-s/CTI-case-study/blob/main/docs/8-rastreamento-de-vuln.md)
