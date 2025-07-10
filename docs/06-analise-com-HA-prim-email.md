@@ -116,9 +116,9 @@ Next, Win11 showed more advanced behavior. It flagged ATT&CK ID T1041 (Exfiltrat
 
 On Win11, clicking the link triggers a POST request with JSON to `host: bzib.nelreports.net`. Recall the phishing page was a replica of the company’s webmail login—any credentials entered would go straight to the attacker’s server. 
 
-**Previous:** [5 Source code analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/05-analise-source-code-prim-email.md)
+**Previous:** [Source code analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/05-analise-source-code-prim-email.md)
 
-**You're here:** [6 Sandbox analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/06-analise-com-HA-prim-email.md)
+**You're here:** [Sandbox analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/06-analise-com-HA-prim-email.md)
 
-**Next:** [7 New attack - Second email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/07-novo-ataque-seg-email.md)
+**Next:** [New attack - Second email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/07-novo-ataque-seg-email.md)
 
