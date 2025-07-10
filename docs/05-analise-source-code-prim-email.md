@@ -10,7 +10,7 @@ At the top is the most recent hop (usually the recipient’s server), while at t
 
 These elements are important because every server’s IP address is visible in the source, letting us reconstruct the email’s path—but IPs alone aren’t a fully reliable intel source.
 
-In the **first block** we see the last contact point (most recent server): `cpanel-003-fra.hostingww.com` using LMTP. That’s the client’s email provider.
+On the **first block** we see the last contact point (most recent server): `cpanel-003-fra.hostingww.com` using LMTP. That’s the client’s email provider.
 
 ```
   X-Mozilla-Status: 0001
@@ -28,7 +28,7 @@ In the **first block** we see the last contact point (most recent server): `cpan
 ```
 
 
-In the **second block** we have another server, IP `148.113.172.133` at `vps-58680c2d.vps.ovh.ca`. Here the sending server announces itself with `helo=mail.corridorconstructioniowa.cam`, and the client’s server accepts the message. The `helo` acts as an SMTP handshake—vital for verifying server legitimacy.
+On the **second block** we have another server, IP `148.113.172.133` at `vps-58680c2d.vps.ovh.ca`. Here the sending server announces itself with `helo=mail.corridorconstructioniowa.cam`, and the client’s server accepts the message. The `helo` acts as an SMTP handshake—vital for verifying server legitimacy.
 
 ___
 <div style="font-family: 'Courier New';">
@@ -89,7 +89,7 @@ A passive DNS lookup shows several IPs tied to that CN, some carrying malicious 
   </div>
 </div>
 
-In the **third block**—the earliest hop—we see the likely origin server. VirusTotal has no info on `ip-134-38.dataclub.info`, but it shows details for IP `84.38.134.38`, hosted in Latvia. Oddly, no vendor flagged it either way.
+In the **third block**, the earliest hop, we see the likely origin server. VirusTotal has no info on `ip-134-38.dataclub.info`, but it shows details for IP `84.38.134.38`, hosted in Latvia. Oddly, no vendor flagged it either way.
 
 <div style="font-family: 'Courier New';">
   <mark>Received: from ip-134-38.dataclub.info (unknown [84.38.134.38])  
@@ -99,7 +99,7 @@ In the **third block**—the earliest hop—we see the likely origin server. Vir
 
 The IP details list a Latvian company and address—but attackers could be masking via VPN/Tor.
 
-Over 23 files on VirusTotal reference that IP, all tied to email-like Trojans—but the flags are generic, so we can’t pin down a specific malware.
+Over 23 files on VirusTotal reference that IP, all tied to email, like Trojans, but the flags are generic, so we can’t pin down a specific malware.
 
 <div style="display: flex;">
   <div style="justify-items: center; margin: 50px;">
