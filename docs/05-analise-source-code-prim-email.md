@@ -146,3 +146,9 @@ The address `hr@corridorconstructioniowa.cam` might exist, but the domain doesnâ
     <p>Figure 12: Legitimate company website.</p>
   </div>
 </div>
+
+**Previous:** [Source code analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/05-analise-source-code-prim-email.md)
+
+**You're here:** [Sandbox analysis - First email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/06-analise-com-HA-prim-email.md)
+
+**Next:** [New attack - Second email](https://github.com/e-v-s/CTI-case-study/blob/main/docs/07-novo-ataque-seg-email.md)
